@@ -24,6 +24,7 @@ public class RubyController : MonoBehaviour
     // ======== AUDIO ==========
     public AudioClip hitSound;
     public AudioClip shootingSound;
+  
 
     // ======== HEALTH ==========
     public int health
@@ -54,6 +55,7 @@ public class RubyController : MonoBehaviour
     public TextMeshProUGUI gameOverText; // Change this to TextMeshProUGUI
     private bool isGameOver = false;
     public AudioClip gameOverAudio; 
+     public AudioClip healthDepletedAudio;
 
     // ======== SCORE ==========
     public int totalRobotsToFix = 5;  // Set this to the total number of robots
@@ -173,6 +175,12 @@ public class RubyController : MonoBehaviour
 
         if (currentHealth == 0)
         {
+        
+        if (healthDepletedAudio != null && !hasPlayedGameOverAudio)
+        {
+            audioSource.PlayOneShot(healthDepletedAudio);
+        }
+            hasPlayedGameOverAudio = true;
             TriggerGameOver();
         }
 
@@ -218,6 +226,8 @@ public class RubyController : MonoBehaviour
     }
 
     // =============== GAME OVER ==========================
+    
+    private bool hasPlayedGameOverAudio = false;
     void TriggerGameOver()
     {
         isGameOver = true;
@@ -226,10 +236,12 @@ public class RubyController : MonoBehaviour
         launchAction.Disable();
         dialogAction.Disable();
 
-        if (gameOverAudio != null)
+    if (!hasPlayedGameOverAudio && gameOverAudio != null)
     {
         audioSource.PlayOneShot(gameOverAudio);
     }
+
+    hasPlayedGameOverAudio = true;
 
         // Disable the collider to prevent movement due to collisions
         collider2d.enabled = false;

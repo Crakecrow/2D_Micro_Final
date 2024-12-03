@@ -32,6 +32,10 @@ public class Enemy : MonoBehaviour
     // ===== RUBY CONTROLLER =====
     private RubyController rubyController;
 
+    // ===== HITS TO FIX ========
+    public int hitsToFix = 1; // Default to 1 for regular enemies
+    private int currentHits = 0;
+
     void Start()
     {
         rigidbody2d = GetComponent<Rigidbody2D>();
@@ -96,23 +100,30 @@ public class Enemy : MonoBehaviour
 
     public void Fix()
     {
-        animator.SetTrigger("Fixed");
-        repaired = true;
+        currentHits++;
 
-        smokeParticleEffect.SetActive(false);
-        Instantiate(fixedParticleEffect, transform.position + Vector3.up * 0.5f, Quaternion.identity);
-
-        // We don't want that enemy to react to the player or bullet anymore, remove its Rigidbody from the simulation
-        rigidbody2d.simulated = false;
-
-        audioSource.Stop();
+        // Play the hit sound on every hit
         audioSource.PlayOneShot(hitSound);
-        audioSource.PlayOneShot(fixedSound);
 
-        // Update the score in RubyController
-        if (rubyController != null)
+        if (currentHits >= hitsToFix)
         {
-            rubyController.ChangeScore(1);
+            animator.SetTrigger("Fixed");
+            repaired = true;
+
+            smokeParticleEffect.SetActive(false);
+            Instantiate(fixedParticleEffect, transform.position + Vector3.up * 0.5f, Quaternion.identity);
+
+            // We don't want that enemy to react to the player or bullet anymore, remove its Rigidbody from the simulation
+            rigidbody2d.simulated = false;
+
+            audioSource.Stop();
+            audioSource.PlayOneShot(fixedSound);
+
+            // Update the score in RubyController
+            if (rubyController != null)
+            {
+                rubyController.ChangeScore(1);
+            }
         }
     }
 }
